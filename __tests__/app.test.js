@@ -63,3 +63,52 @@ describe("/api", () => {
     });
 
 })
+describe("/api/articles/:article_id", () => {
+    test("GET 200: Responds with endpoint json data", () => {
+        return request(app)
+            .get("/api/articles/4")
+            .expect(200)
+            .then(({ body }) => {
+              const article = body.article;
+              article.forEach((article) => {
+                  expect(typeof article.article_id).toBe("number");
+                  expect(typeof article.title).toBe("string");
+                  expect(typeof article.topic).toBe("string");
+                  expect(typeof article.author).toBe("string");
+                  expect(typeof article.body).toBe("string");
+                  expect(typeof article.created_at).toBe("string");
+                  expect(typeof article.votes).toBe("number");
+                  expect(typeof article.article_img_url).toBe("string");
+                //do I include a test for definite values?
+                  expect(article.article_id).toBe(4);
+                  expect(article.title).toBe("Student SUES Mitch!");
+                  expect(article.topic).toBe("mitch");
+                  expect(article.author).toBe("rogersop");
+                  expect(article.body).toBe("We all love Mitch and his wonderful, unique typing style. However, the volume of his typing has ALLEGEDLY burst another students eardrums, and they are now suing for damages");
+                  expect(article.created_at).toBe("2020-05-06T01:14:00.000Z");
+                  expect(article.votes).toBe(0);
+                  expect(article.article_img_url).toBe("https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700");                
+
+                });
+              });
+    });
+    test("GET 404: Returns an error with a path of the right type, but not present in database", () => {
+        return request(app)
+            .get("/api/articles/999")
+            .expect(404)
+            .then(({ body }) => {
+                const { message } = body;
+                expect(message).toBe('Path not found');
+                            
+            });
+    });
+    test("GET 400: Returns an error with a path of the wrong type", () => {
+        return request(app)
+          .get("/api/articles/banana")
+          .expect(400)
+          .then(({ body }) => {
+            const { message } = body;
+            expect(message).toBe("bad request");
+          });
+      });
+})

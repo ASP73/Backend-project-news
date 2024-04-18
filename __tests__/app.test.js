@@ -4,6 +4,9 @@ const db = require("../db/connection");
 const seed = require("../db/seeds/seed");
 const data = require("../db/data/test-data");
 const topics = require("../db/data/test-data/topics");
+const articles = require("../db/data/test-data/articles");
+const comments = require("../db/data/test-data/comments");
+
 
 
 beforeEach(() => {
@@ -111,4 +114,46 @@ describe("/api/articles/:article_id", () => {
             expect(message).toBe("bad request");
           });
       });
+})
+describe("/api/articles", () => {
+    test("GET 200: Responds with endpoint json data", () => {
+        return request(app)
+            .get("/api/articles")
+            .expect(200)
+            .then(({ body }) => {
+
+              const article = body.topics;
+              article.forEach((article) => {
+                  expect(typeof article.article_id).toBe("number");
+                  expect(typeof article.title).toBe("string");
+                  expect(typeof article.topic).toBe("string");
+                  expect(typeof article.author).toBe("string");
+                  expect(typeof article.comment_count).toBe("string");
+                  expect(typeof article.created_at).toBe("string");
+                  expect(typeof article.votes).toBe("number");
+                  expect(typeof article.article_img_url).toBe("string");
+                });
+              });
+    });
+    test("GET 200: Responds with articles ordered by DESC", () => {
+        return request(app)
+          .get("/api/articles")
+          .expect(200)
+          .then(({ body }) => {
+            console.log(body);
+            const article = body.topics;
+            expect(article).toBeSortedBy("created_at", { descending: true });
+          });
+      });
+    test("GET 404: Returns path not found for an endpoint that does not exist", () => {
+        return request(app)
+            .get("/api/artichokes")
+            .expect(404)
+            .then(({ body }) => {
+                const { message } = body;
+                expect(message).toBe('Path not found');
+                            
+            });
+    });
+ //should I test for inaccurate count? not a 400 or 404, end user couldn't know   
 })

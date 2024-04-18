@@ -72,6 +72,7 @@ describe("/api/articles/:article_id", () => {
             .get("/api/articles/4")
             .expect(200)
             .then(({ body }) => {
+
               const article = body.article;
               article.forEach((article) => {
                   expect(typeof article.article_id).toBe("number");
@@ -140,7 +141,6 @@ describe("/api/articles", () => {
           .get("/api/articles")
           .expect(200)
           .then(({ body }) => {
-            console.log(body);
             const article = body.topics;
             expect(article).toBeSortedBy("created_at", { descending: true });
           });
@@ -156,4 +156,50 @@ describe("/api/articles", () => {
             });
     });
  //should I test for inaccurate count? not a 400 or 404, end user couldn't know   
+})
+describe("/api/articles/:article_id/comments", () => {
+    test("GET 200: Responds with endpoint json data", () => {
+        return request(app)
+            .get("/api/articles/3/comments")
+            .expect(200)
+            .then(({ body }) => {
+              const comments = body.comments;
+              comments.forEach((comment) => {
+                  expect(typeof comment.comment_id).toBe("number");
+                  expect(typeof comment.votes).toBe("number");
+                  expect(typeof comment.created_at).toBe("string");
+                  expect(typeof comment.author).toBe("string");
+                  expect(typeof comment.body).toBe("string");
+                  expect(typeof comment.article_id).toBe("number");
+                });
+              });
+    });
+    test("GET 404: Returns an error with a path of the right type, but not present in database", () => {
+        return request(app)
+            .get("/api/articles/999")
+            .expect(404)
+            .then(({ body }) => {
+                const { message } = body;
+                expect(message).toBe('Path not found');
+                            
+            });
+    });
+    test("GET 400: Returns an error with a path of the wrong type", () => {
+        return request(app)
+          .get("/api/articles/banana")
+          .expect(400)
+          .then(({ body }) => {
+            const { message } = body;
+            expect(message).toBe("bad request");
+          });
+      });
+      test("GET 200: Returns an empty array if article_id does not have any comments", () => {
+        return request(app)
+          .get("/api/articles/4/comments")
+          .expect(200)
+          .then(({ body }) => {
+            const { comments } = body;
+            expect(comments).toEqual([]);
+          });
+      }); 
 })

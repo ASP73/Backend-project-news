@@ -1,4 +1,4 @@
-const { fetchTopics, fetchArticles, fetchArticleById }= require("../models/model_test")
+const { fetchTopics, fetchArticles, fetchArticleById, fetchCommentsByArticleId }= require("../models/model_test")
 
 
 const getTopics = (req,res,next) => {
@@ -31,4 +31,19 @@ const getArticleById = (req,res,next) => {
       });
 };
 
-module.exports = { getTopics, getArticles, getArticleById };
+const getCommentsByArticleId = (req,res,next) => {
+    const { article_id } = req.params;
+    fetchArticleById(article_id)
+    .then(() => fetchCommentsByArticleId(article_id))
+    .then((comments) => res.status(200).send({comments}))
+    .catch((err) => {
+
+        if (err.status && err.message) {
+            res.status(err.status).send({ message: err.message });
+          }
+        next(err);
+
+      });
+};
+
+module.exports = { getTopics, getArticles, getArticleById, getCommentsByArticleId };

@@ -72,6 +72,7 @@ describe("/api/articles/:article_id", () => {
             .get("/api/articles/4")
             .expect(200)
             .then(({ body }) => {
+
               const article = body.article;
               article.forEach((article) => {
                   expect(typeof article.article_id).toBe("number");
@@ -140,7 +141,6 @@ describe("/api/articles", () => {
           .get("/api/articles")
           .expect(200)
           .then(({ body }) => {
-            console.log(body);
             const article = body.topics;
             expect(article).toBeSortedBy("created_at", { descending: true });
           });
@@ -156,4 +156,60 @@ describe("/api/articles", () => {
             });
     });
  //should I test for inaccurate count? not a 400 or 404, end user couldn't know   
+})
+describe("/api/articles/:article_id/comments", () => {
+    test("GET 200: Responds with endpoint json data", () => {
+        return request(app)
+            .get("/api/articles/3/comments")
+            .expect(200)
+            .then(({ body }) => {
+              const comments = body.comments;
+              comments.forEach((comment) => {
+                  expect(typeof comment.comment_id).toBe("number");
+                  expect(typeof comment.votes).toBe("number");
+                  expect(typeof comment.created_at).toBe("string");
+                  expect(typeof comment.author).toBe("string");
+                  expect(typeof comment.body).toBe("string");
+                  expect(typeof comment.article_id).toBe("number");
+                //do I include a test for definite values?
+                //   expect(article.article_id).toBe(4);
+                //   expect(article.title).toBe("Student SUES Mitch!");
+                //   expect(article.topic).toBe("mitch");
+                //   expect(article.author).toBe("rogersop");
+                //   expect(article.body).toBe("We all love Mitch and his wonderful, unique typing style. However, the volume of his typing has ALLEGEDLY burst another students eardrums, and they are now suing for damages");
+                //   expect(article.created_at).toBe("2020-05-06T01:14:00.000Z");
+                //   expect(article.votes).toBe(0);
+                //   expect(article.article_img_url).toBe("https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700");                
+
+                });
+              });
+    });
+    test("GET 404: Returns an error with a path of the right type, but not present in database", () => {
+        return request(app)
+            .get("/api/articles/999")
+            .expect(404)
+            .then(({ body }) => {
+                const { message } = body;
+                expect(message).toBe('Path not found');
+                            
+            });
+    });
+    test("GET 400: Returns an error with a path of the wrong type", () => {
+        return request(app)
+          .get("/api/articles/banana")
+          .expect(400)
+          .then(({ body }) => {
+            const { message } = body;
+            expect(message).toBe("bad request");
+          });
+      });
+      test("GET 200: Returns an empty array if article_id does not have any comments", () => {
+        return request(app)
+          .get("/api/articles/4/comments")
+          .expect(200)
+          .then(({ body }) => {
+            const { comments } = body;
+            expect(comments).toEqual([]);
+          });
+      }); 
 })

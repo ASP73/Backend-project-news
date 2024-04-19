@@ -35,7 +35,8 @@ describe("/api/topics", () => {
             .get("/api/tropics")
             .expect(404)
             .then(({ body }) => {
-                expect(body.message).toEqual('Path not found');
+              console.log(body)
+                expect(body.message).toEqual('Not found');
                             
             });
     });
@@ -60,7 +61,7 @@ describe("/api", () => {
             .get("/apx")
             .expect(404)
             .then(({ body }) => {
-                expect(body.message).toEqual('Path not found');
+                expect(body.message).toEqual('Not found');
                             
             });
     });
@@ -102,7 +103,7 @@ describe("/api/articles/:article_id", () => {
             .expect(404)
             .then(({ body }) => {
                 const { message } = body;
-                expect(message).toBe('Path not found');
+                expect(message).toBe('Not found');
                             
             });
     });
@@ -151,7 +152,7 @@ describe("/api/articles", () => {
             .expect(404)
             .then(({ body }) => {
                 const { message } = body;
-                expect(message).toBe('Path not found');
+                expect(message).toBe('Not found');
                             
             });
     });
@@ -180,13 +181,13 @@ describe("/api/articles/:article_id/comments", () => {
             .expect(404)
             .then(({ body }) => {
                 const { message } = body;
-                expect(message).toBe('Path not found');
+                expect(message).toBe('Not found');
                             
             });
     });
     test("GET 400: Returns an error with a path of the wrong type", () => {
         return request(app)
-          .get("/api/articles/banana")
+          .get("/api/articles/banana/comments")
           .expect(400)
           .then(({ body }) => {
             const { message } = body;
@@ -202,4 +203,76 @@ describe("/api/articles/:article_id/comments", () => {
             expect(comments).toEqual([]);
           });
       }); 
+})
+describe("/api/articles/:article_id/comments", () => {
+  test("POST 201: Responds with endpoint json data", () => {
+      return request(app)
+          .post("/api/articles/3/comments")
+          .send({
+            username: "rogersop",
+            body: "load of garbage",
+          })
+          .expect(201)
+          .then(({ body }) => {
+            const comments = body.comments;
+            comments.forEach((comment) => {
+                expect(typeof comment.comment_id).toBe("number");
+                expect(typeof comment.votes).toBe("number");
+                expect(typeof comment.created_at).toBe("string");
+                expect(typeof comment.author).toBe("string");
+                expect(typeof comment.body).toBe("string");
+                expect(typeof comment.article_id).toBe("number");
+              });
+            });
+  });
+  test("POST 404: Returns an error when posting to an article that doesn't exist", () => {
+      return request(app)
+          .post("/api/articles/999/comments")
+          .send({
+            username: "rogersop",
+            body: "load of garbage",
+          })
+          .expect(404)
+          .then(({ body }) => {
+              const { message } = body;
+              expect(message).toBe('Not found');
+                          
+          });
+  });
+  test("POST 400: Returns an error with a path of the wrong type", () => {
+      return request(app)
+        .post("/api/articles/banana/comments")
+        .expect(400)
+        .then(({ body }) => {
+          const { message } = body;
+          expect(message).toBe("bad request");
+        });
+    });
+    test("POST 404: User does not exist", () => {
+      return request(app)
+        .post("/api/articles/4/comments")
+        .send({
+          username: "Barry",
+          body: "load of garbage",
+        })
+        .expect(404)
+        .then(({ body }) => {
+          const { message } = body;
+          expect(message).toBe('Not found');
+        });
+    }); 
+    test("POST 400: Body not of expected standard", () => {
+      return request(app)
+        .post("/api/articles/4/comments")
+        .send({
+          username: "rogersop",
+          Barry: "load of garbage",
+        })
+        .expect(400)
+        .then(({ body }) => {
+          console.log(body, "<=== This is in the test");
+          const { message } = body;
+          expect(message).toBe("bad request");
+        });
+    }); 
 })

@@ -1,4 +1,4 @@
-const { fetchTopics, fetchArticles, fetchArticleById, fetchCommentsByArticleId }= require("../models/model_test")
+const { fetchTopics, fetchArticles, fetchArticleById, fetchCommentsByArticleId, postingComment }= require("../models/model_test")
 
 
 const getTopics = (req,res,next) => {
@@ -36,14 +36,21 @@ const getCommentsByArticleId = (req,res,next) => {
     fetchArticleById(article_id)
     .then(() => fetchCommentsByArticleId(article_id))
     .then((comments) => res.status(200).send({comments}))
-    .catch((err) => {
-
-        if (err.status && err.message) {
-            res.status(err.status).send({ message: err.message });
-          }
-        next(err);
-
-      });
+    .catch(next);
 };
 
-module.exports = { getTopics, getArticles, getArticleById, getCommentsByArticleId };
+const postCommentToArticle = (req, res, next) => {
+    const { article_id } = req.params;
+    Promise.all([postingComment( article_id, req.body), fetchArticleById(article_id)]) 
+    .then((promiseResults) => {
+        const comments = promiseResults[0];
+        console.log(promiseResults);
+        res.status(201).send({ comments: comments })})
+    .catch((err) => {
+        console.log(err)
+        next(err);
+    })
+    ;
+}
+
+module.exports = { getTopics, getArticles, getArticleById, getCommentsByArticleId, postCommentToArticle };

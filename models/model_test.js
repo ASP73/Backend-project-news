@@ -11,7 +11,7 @@ const fetchArticles = () => {
     .then(({ rows }) => {
 
        if(rows.length === 0) {
-        return Promise.reject({ status: 404, message: 'Path not found'})
+        return Promise.reject({ status: 404, message: 'Not found'})
        }
         return rows;
     })
@@ -26,7 +26,7 @@ const fetchArticleById = (article_id) => {
     .then(({ rows }) => {
        
        if(rows.length === 0) {
-        return Promise.reject({ status: 404, message: 'Path not found'})
+        return Promise.reject({ status: 404, message: 'Not found'})
        }
         return rows;
     })
@@ -44,4 +44,17 @@ const fetchCommentsByArticleId = (article_id) => {
     })
 }
 
-module.exports = { fetchTopics, fetchArticles, fetchArticleById, fetchCommentsByArticleId };
+const postingComment = (article_id, newComment) => {
+
+    const { username, body } = newComment;
+    return db.query(`INSERT INTO comments (article_id, author, body) VALUES ($1, $2, $3) RETURNING *;`, [article_id, username, body])
+    .then(({ rows }) => {
+        console.log(rows);
+        return rows;
+    })
+
+}
+
+
+
+module.exports = { fetchTopics, fetchArticles, fetchArticleById, fetchCommentsByArticleId, postingComment };

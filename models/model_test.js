@@ -49,7 +49,16 @@ const postingComment = (article_id, newComment) => {
     const { username, body } = newComment;
     return db.query(`INSERT INTO comments (article_id, author, body) VALUES ($1, $2, $3) RETURNING *;`, [article_id, username, body])
     .then(({ rows }) => {
-        console.log(rows);
+        return rows;
+    })
+
+}
+
+const patchingArticle = (article_id, newVote) => {
+
+    const { inc_votes } = newVote;
+    return db.query(`UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *;`, [inc_votes, article_id ])
+    .then(({ rows }) => {
         return rows;
     })
 
@@ -57,4 +66,4 @@ const postingComment = (article_id, newComment) => {
 
 
 
-module.exports = { fetchTopics, fetchArticles, fetchArticleById, fetchCommentsByArticleId, postingComment };
+module.exports = { fetchTopics, fetchArticles, fetchArticleById, fetchCommentsByArticleId, postingComment, patchingArticle };

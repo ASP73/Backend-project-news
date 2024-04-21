@@ -35,7 +35,6 @@ describe("/api/topics", () => {
             .get("/api/tropics")
             .expect(404)
             .then(({ body }) => {
-              console.log(body)
                 expect(body.message).toEqual('Not found');
                             
             });
@@ -270,9 +269,66 @@ describe("/api/articles/:article_id/comments", () => {
         })
         .expect(400)
         .then(({ body }) => {
-          console.log(body, "<=== This is in the test");
           const { message } = body;
           expect(message).toBe("bad request");
         });
     }); 
 })
+describe("/api/articles/:article_id", () => {
+  test("PATCH 200: Responds with upddated endpoint json data", () => {
+      return request(app)
+          .patch("/api/articles/2")
+          .send({
+            inc_votes: 4
+          })
+          .expect(200)
+          .then(({ body }) => {
+            const article = body.article;
+                expect(article.article_id).toBe(2);
+                expect(article.votes).toBe(4);
+                expect(article.title).toBe("Sony Vaio; or, The Laptop");
+                expect(article.topic).toBe("mitch");
+                expect(article.author).toBe("icellusedkars");
+                expect(typeof article.body).toBe("string");
+                expect(typeof article.created_at).toBe("string");
+                expect(article.article_img_url).toBe("https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700");
+                
+                
+              });
+            });
+  });
+  test("PATCH 404: Returns an error when patching to an article that doesn't exist", () => {
+        return request(app)
+          .patch("/api/articles/999/")
+          .send({
+            inc_votes: 4
+          })
+          .expect(404)
+          .then(({ body }) => {
+              const { message } = body;
+              expect(message).toBe('Not found');
+                          
+          });
+  });
+  test("PATCH 400: Returns an error with a path of the wrong type", () => {
+      return request(app)
+        .patch("/api/articles/banana")
+        .expect(400)
+        .then(({ body }) => {
+          const { message } = body;
+          expect(message).toBe("bad request");
+        });
+    });
+    test("PATCH 400: Body not of expected standard", () => {
+      return request(app)
+        .patch("/api/articles/4")
+        .send({
+          username: "rogersop",
+          Barry: "load of garbage",
+        })
+        .expect(400)
+        .then(({ body }) => {
+          const { message } = body;
+          expect(message).toBe("bad request");
+        });
+    }); 

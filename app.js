@@ -1,5 +1,5 @@
 const express = require("express");
-const { getTopics, getArticles, getArticleById, getCommentsByArticleId, postCommentToArticle } = require("./controllers/controller_test");
+const { getTopics, getArticles, getArticleById, getCommentsByArticleId, postCommentToArticle, patchArticleById } = require("./controllers/controller_test");
 const endpoints = require("./endpoints.json");
 
 const app = express();
@@ -20,14 +20,14 @@ app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 
 app.post("/api/articles/:article_id/comments", postCommentToArticle);
 
-//app.patch("/api/articles/:article_id", patchArticleById);
+app.patch("/api/articles/:article_id", patchArticleById);
+
 app.use('*', (req, res, next) => {
 
     res.status(404).send({message: 'Not found'  });
 })
 
 app.use((err, req, res, next) => {
-    console.log(err);
     if (err.status && err.message) {
         res.status(err.status).send({ message: err.message });
       }
@@ -35,7 +35,6 @@ app.use((err, req, res, next) => {
 })
 
 app.use((err, req, res, next) => {
-    console.log(err);
     if(err.code === '22P02'){
         res.status(400).send({message: 'bad request'})
     } 
@@ -50,7 +49,6 @@ app.use((err, req, res, next) => {
 
 
 app.use((err, req, res, next) => {
-    console.log(err);
     res.status(500).send({message: 'Internal Server Error'});
 })
 

@@ -154,8 +154,7 @@ describe("/api/articles", () => {
                 expect(message).toBe('Not found');
                             
             });
-    });
- //should I test for inaccurate count? not a 400 or 404, end user couldn't know   
+    });  
 })
 describe("/api/articles/:article_id/comments", () => {
     test("GET 200: Responds with endpoint json data", () => {
@@ -296,7 +295,7 @@ describe("/api/articles/:article_id", () => {
                 
               });
             });
-  });
+
   test("PATCH 404: Returns an error when patching to an article that doesn't exist", () => {
         return request(app)
           .patch("/api/articles/999/")
@@ -332,3 +331,30 @@ describe("/api/articles/:article_id", () => {
           expect(message).toBe("bad request");
         });
     }); 
+  })
+describe("/api/comments/:comment_id", () => {
+    test("DELETE 204: Deletes the comment with passed id", () => {
+        return request(app)
+            .delete("/api/comments/3")
+            .expect(204);            
+    });
+    test("DELETE 404: Responds with an error if comment_id does not exist ", () => {
+        return request(app)
+          .delete("/api/comments/999")
+          .expect(404)
+          .then(({ body }) => {
+            const { message } = body;
+            expect(message).toBe("Not found");
+          });
+      });
+    test("DELETE 400: Responds with an error when comment_id is invalid datatype", () => {
+        return request(app)
+            .delete("/api/comments/banana")
+            .expect(400)
+            .then(({ body }) => {
+                const { message } = body;
+                expect(message).toBe('bad request');
+                            
+            });
+    });  
+})

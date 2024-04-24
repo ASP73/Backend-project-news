@@ -91,5 +91,13 @@
         }
       ]
     }
+  },
+  "DELETE /api/comments/:comment_id": {
+    "description": "deletes the comment specified in comment_id, provides only 204 status in",
+    "queries": [],
+    "exampleResponse": {
+     
+    }
   }
 }
+

@@ -16,7 +16,6 @@ beforeEach(() => {
 afterAll(() => {
     return db.end();
  });
-//previous katas have asked for typeof but this specifies properties
 describe("/api/topics", () => {
     test("GET 200: Responds with an array of all topics", () => {
         return request(app)
@@ -43,7 +42,7 @@ describe("/api/topics", () => {
 
 
 })
-//do I do a length test with just the endpoint data? Unsure, nothing in model for logic
+
 describe("/api", () => {
     test("GET 200: Responds with endpoint json data", () => {
         return request(app)
@@ -357,4 +356,30 @@ describe("/api/comments/:comment_id", () => {
                             
             });
     });  
+})
+describe("/api/users", () => {
+  test("GET 200: Responds with endpoint json data", () => {
+      return request(app)
+          .get("/api/users")
+          .expect(200)
+          .then(({ body }) => {
+            console.log(body);
+            const {users} = body;
+            users.forEach((user) => {
+                expect(typeof user.username).toBe("string");
+                expect(typeof user.name).toBe("string");
+                expect(typeof user.avatar_url).toBe("string");
+              });
+            });
+  });
+  test("GET 404: Returns path not found for an endpoint that does not exist", () => {
+      return request(app)
+          .get("/api/losers")
+          .expect(404)
+          .then(({ body }) => {
+              const { message } = body;
+              expect(message).toBe('Not found');
+                          
+          });
+  });  
 })

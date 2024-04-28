@@ -1,4 +1,4 @@
-const { fetchTopics, fetchArticles, fetchArticleById, fetchCommentsByArticleId, postingComment, patchingArticle, deleteComment }= require("../models/model_test")
+const { fetchTopics, fetchArticles, fetchArticleById, fetchCommentsByArticleId, postingComment, patchingArticle, deleteComment, fetchUsers }= require("../models/model_test")
 
 
 const getTopics = (req,res,next) => {
@@ -70,5 +70,14 @@ const deleteCommentById = (req, res, next) => {
 
 }
 
+const getUsers = (req,res,next) => {
+    fetchUsers().then((users) => {
+        res.status(200).send({ users: users });
+    })
+    .catch((err) => {
+        next(err);
+    });
+};
 
-module.exports = { getTopics, getArticles, getArticleById, getCommentsByArticleId, postCommentToArticle, patchArticleById, deleteCommentById };
+
+module.exports = { getTopics, getArticles, getArticleById, getCommentsByArticleId, postCommentToArticle, patchArticleById, deleteCommentById, getUsers };

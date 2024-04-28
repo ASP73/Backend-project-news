@@ -74,9 +74,16 @@ const deleteComment = (comment_id) => {
         return Promise.reject({ status: 404, message: 'Not found'});
         }
     })
-
 }
 
+const fetchUsers = () => {
+    return db.query(`SELECT username, name, avatar_url FROM users;`)
+    .then(({ rows }) => {
 
-
-module.exports = { fetchTopics, fetchArticles, fetchArticleById, fetchCommentsByArticleId, postingComment, patchingArticle, deleteComment };
+       if(rows.length === 0) {
+        return Promise.reject({ status: 404, message: 'Not found'})
+       }
+        return rows;
+    })
+} 
+module.exports = { fetchTopics, fetchArticles, fetchArticleById, fetchCommentsByArticleId, postingComment, patchingArticle, deleteComment, fetchUsers };

@@ -1,5 +1,5 @@
 const express = require("express");
-const { getTopics, getArticles, getArticleById, getCommentsByArticleId, postCommentToArticle, patchArticleById } = require("./controllers/controller_test");
+const { getTopics, getArticles, getArticleById, getCommentsByArticleId, postCommentToArticle, patchArticleById, deleteCommentById, getUsers } = require("./controllers/controller_test");
 const endpoints = require("./endpoints.json");
 
 const app = express();
@@ -22,10 +22,10 @@ app.post("/api/articles/:article_id/comments", postCommentToArticle);
 
 app.patch("/api/articles/:article_id", patchArticleById);
 
-app.use('*', (req, res, next) => {
+app.delete("/api/comments/:comment_id", deleteCommentById);
 
-    res.status(404).send({message: 'Not found'  });
-})
+app.get("/api/users", getUsers);
+
 
 app.use((err, req, res, next) => {
     if (err.status && err.message) {
@@ -33,6 +33,12 @@ app.use((err, req, res, next) => {
       }
     next(err);
 })
+
+app.use('*', (req, res, next) => {
+
+    res.status(404).send({message: 'Not found'  });
+})
+
 
 app.use((err, req, res, next) => {
     if(err.code === '22P02'){

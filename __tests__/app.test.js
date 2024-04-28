@@ -16,7 +16,6 @@ beforeEach(() => {
 afterAll(() => {
     return db.end();
  });
-//previous katas have asked for typeof but this specifies properties
 describe("/api/topics", () => {
     test("GET 200: Responds with an array of all topics", () => {
         return request(app)
@@ -43,7 +42,7 @@ describe("/api/topics", () => {
 
 
 })
-//do I do a length test with just the endpoint data? Unsure, nothing in model for logic
+
 describe("/api", () => {
     test("GET 200: Responds with endpoint json data", () => {
         return request(app)
@@ -154,8 +153,7 @@ describe("/api/articles", () => {
                 expect(message).toBe('Not found');
                             
             });
-    });
- //should I test for inaccurate count? not a 400 or 404, end user couldn't know   
+    });  
 })
 describe("/api/articles/:article_id/comments", () => {
     test("GET 200: Responds with endpoint json data", () => {
@@ -296,7 +294,7 @@ describe("/api/articles/:article_id", () => {
                 
               });
             });
-  });
+
   test("PATCH 404: Returns an error when patching to an article that doesn't exist", () => {
         return request(app)
           .patch("/api/articles/999/")
@@ -332,3 +330,56 @@ describe("/api/articles/:article_id", () => {
           expect(message).toBe("bad request");
         });
     }); 
+  })
+describe("/api/comments/:comment_id", () => {
+    test("DELETE 204: Deletes the comment with passed id", () => {
+        return request(app)
+            .delete("/api/comments/3")
+            .expect(204);            
+    });
+    test("DELETE 404: Responds with an error if comment_id does not exist ", () => {
+        return request(app)
+          .delete("/api/comments/999")
+          .expect(404)
+          .then(({ body }) => {
+            const { message } = body;
+            expect(message).toBe("Not found");
+          });
+      });
+    test("DELETE 400: Responds with an error when comment_id is invalid datatype", () => {
+        return request(app)
+            .delete("/api/comments/banana")
+            .expect(400)
+            .then(({ body }) => {
+                const { message } = body;
+                expect(message).toBe('bad request');
+                            
+            });
+    });  
+})
+describe("/api/users", () => {
+  test("GET 200: Responds with endpoint json data", () => {
+      return request(app)
+          .get("/api/users")
+          .expect(200)
+          .then(({ body }) => {
+            console.log(body);
+            const {users} = body;
+            users.forEach((user) => {
+                expect(typeof user.username).toBe("string");
+                expect(typeof user.name).toBe("string");
+                expect(typeof user.avatar_url).toBe("string");
+              });
+            });
+  });
+  test("GET 404: Returns path not found for an endpoint that does not exist", () => {
+      return request(app)
+          .get("/api/losers")
+          .expect(404)
+          .then(({ body }) => {
+              const { message } = body;
+              expect(message).toBe('Not found');
+                          
+          });
+  });  
+})

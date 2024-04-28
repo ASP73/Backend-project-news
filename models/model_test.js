@@ -64,6 +64,26 @@ const patchingArticle = (article_id, newVote) => {
 
 }
 
+const deleteComment = (comment_id) => {
+    if(isNaN(comment_id) || comment_id <=0){
+        return Promise.reject({ status: 400, message: 'bad request'});
+    }
+    return db.query(`DELETE FROM comments WHERE comment_id = $1 RETURNING *;`, [comment_id])
+    .then(({ rows: comment }) => {
+        if(comment.length === 0){
+        return Promise.reject({ status: 404, message: 'Not found'});
+        }
+    })
+}
 
+const fetchUsers = () => {
+    return db.query(`SELECT username, name, avatar_url FROM users;`)
+    .then(({ rows }) => {
 
-module.exports = { fetchTopics, fetchArticles, fetchArticleById, fetchCommentsByArticleId, postingComment, patchingArticle };
+       if(rows.length === 0) {
+        return Promise.reject({ status: 404, message: 'Not found'})
+       }
+        return rows;
+    })
+} 
+module.exports = { fetchTopics, fetchArticles, fetchArticleById, fetchCommentsByArticleId, postingComment, patchingArticle, deleteComment, fetchUsers };

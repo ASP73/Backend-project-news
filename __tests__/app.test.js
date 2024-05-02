@@ -363,7 +363,6 @@ describe("/api/users", () => {
           .get("/api/users")
           .expect(200)
           .then(({ body }) => {
-            console.log(body);
             const {users} = body;
             users.forEach((user) => {
                 expect(typeof user.username).toBe("string");

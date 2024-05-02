@@ -100,7 +100,7 @@
     }
   },
 
-  "GET /api/articles": {
+  "GET /api/users": {
    "description": "serves an array of all Users",
    "queries": ["username", "name", "sort_by", "order"],
    "exampleResponse": {

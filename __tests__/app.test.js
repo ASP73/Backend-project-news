@@ -113,8 +113,8 @@ describe("/api/articles", () => {
       .get("/api/articles")
       .expect(200)
       .then(({ body }) => {
-        const article = body.article;
-        article.forEach((article) => {
+        const articles = body.articles;
+        articles.forEach((article) => {
           expect(typeof article.article_id).toBe("number");
           expect(typeof article.title).toBe("string");
           expect(typeof article.topic).toBe("string");
@@ -131,8 +131,8 @@ describe("/api/articles", () => {
       .get("/api/articles")
       .expect(200)
       .then(({ body }) => {
-        const article = body.article;
-        expect(article).toBeSortedBy("created_at", { descending: true });
+        const articles = body.articles;
+        expect(articles).toBeSortedBy("created_at", { descending: true });
       });
   });
   test("GET 404: Returns path not found for an endpoint that does not exist", () => {

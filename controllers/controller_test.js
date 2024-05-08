@@ -21,7 +21,7 @@ const getTopics = (req, res, next) => {
 
 const getArticles = (req, res, next) => {
   fetchArticles()
-    .then((topics) => {
+    .then((articles) => {
       res.status(200).send({ articles: articles });
     })
     .catch((err) => {
